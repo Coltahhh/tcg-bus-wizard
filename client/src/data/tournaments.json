@@ -1,0 +1,26 @@
+{
+  "tournaments": [
+    {
+      "id": 1,
+      "name": "One Piece East Blue Cup 2023",
+      "date": "2023-11-05",
+      "bracket": {
+        "rounds": [
+          {
+            "roundName": "Quarterfinals",
+            "matches": [
+              { "player1": "Monkey D. Luffy", "player2": "Roronoa Zoro", "winner": "Monkey D. Luffy" },
+              { "player1": "Nami", "player2": "Sanji", "winner": "Sanji" }
+            ]
+          },
+          {
+            "roundName": "Semifinals",
+            "matches": [
+              { "player1": "Monkey D. Luffy", "player2": "Sanji", "winner": "Monkey D. Luffy" }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
