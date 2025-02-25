@@ -1,0 +1,200 @@
+/* src/index.css */
+:root {
+    --primary-color: #ffd700;  /* Gold */
+    --secondary-color: #dc3545;  /* Red */
+    --background-color: #000000;  /* Black */
+    --text-color: #ffffff;  /* White */
+}
+
+/* Global Styles */
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--primary-color) !important;
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.navbar-brand, .nav-link {
+    color: var(--background-color) !important;
+}
+
+.nav-link.active {
+    border-bottom: 3px solid var(--secondary-color) !important;
+    color: var(--secondary-color) !important;
+}
+
+/* Tournament Cards */
+.tournament-card {
+    background-color: #1a1a1a;
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.tournament-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* Bracket Styles */
+.bracket {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    overflow-x: auto;
+}
+
+.round {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin: 0 40px;
+}
+
+.match {
+    background-color: #1a1a1a;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin: 20px 0;
+    min-width: 200px;
+    position: relative;
+}
+
+.match::after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 2px;
+    background: var(--primary-color);
+    right: -40px;
+    top: 50%;
+}
+
+.round:last-child .match::after {
+    display: none;
+}
+
+.player {
+    padding: 5px;
+    margin: 5px 0;
+    background-color: #333;
+    border-radius: 4px;
+}
+
+.winner {
+    background-color: var(--secondary-color);
+    color: white;
+    font-weight: bold;
+}
+
+/* Tables */
+.table-dark {
+    background-color: #1a1a1a;
+    --bs-table-bg: #1a1a1a;
+    --bs-table-striped-bg: #262626;
+    border-color: var(--primary-color);
+}
+
+.table-dark th {
+    color: var(--primary-color);
+}
+
+/* Buttons */
+.btn-outline-warning {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline-warning:hover {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+}
+
+.btn-warning {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    border: none;
+}
+
+.btn-warning:hover {
+    background-color: #ffcc00;
+}
+
+/* Prize Cards */
+.prize-card {
+    background-color: #1a1a1a;
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.prize-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* Modals */
+.modal-content {
+    background-color: #1a1a1a;
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--primary-color);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--primary-color);
+}
+
+/* Forms */
+.form-control {
+    background-color: #333;
+    border: 1px solid var(--primary-color);
+    color: var(--text-color);
+}
+
+.form-control:focus {
+    background-color: #444;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+}
+
+/* Utility Classes */
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.text-secondary {
+    color: var(--secondary-color) !important;
+}
+
+.bg-dark {
+    background-color: var(--background-color) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .bracket {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .round {
+        margin: 20px 0;
+    }
+
+    .match::after {
+        display: none;
+    }
+}
