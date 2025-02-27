@@ -1,11 +1,19 @@
+// models/Tournament.js
 const mongoose = require('mongoose');
 
 const tournamentSchema = new mongoose.Schema({
     name: { type: String, required: true },
     date: { type: Date, default: Date.now },
-    organizer: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    bracket: { type: Object, default: {} }
+    bracket: {
+        rounds: [{
+            roundName: String,
+            matches: [{
+                player1: String,
+                player2: String,
+                winner: String
+            }]
+        }]
+    }
 });
 
 module.exports = mongoose.model('Tournament', tournamentSchema);

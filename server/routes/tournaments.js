@@ -1,3 +1,4 @@
+// routes/tournaments.js
 const express = require('express');
 const router = express.Router();
 const Tournament = require('../models/Tournament');
@@ -12,12 +13,11 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Create tournament
+// Create a tournament
 router.post('/', async (req, res) => {
     const tournament = new Tournament({
         name: req.body.name,
         date: req.body.date,
-        participants: req.body.participants,
         bracket: req.body.bracket
     });
 
