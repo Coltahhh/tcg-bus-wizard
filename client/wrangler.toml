@@ -1,0 +1,11 @@
+name = "tcg-bus-wizard-worker"
+main = "src/index.js"
+compatibility_date = "2024-02-01"
+
+[build]
+command = "npm run build"
+
+[env.production]
+vars = {
+  API_URL = "https://api.tcgbuswizard.com"
+}
