@@ -8,11 +8,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
     "axios": "^1.6.2",
+    "bootstrap": "^5.3.3",
+    "firebase": "^11.4.0",
+    "firebase-admin": "^13.1.0",
+    "import-meta-resolve": "^4.1.0",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
+    "react-bootstrap": "^2.10.9",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.23.1",
+    "react-firebase-hooks": "^5.1.1",
+    "react-router-dom": "^6.30.0",
     "react-tournament-bracket": "^0.2.4"
   },
   "devDependencies": {

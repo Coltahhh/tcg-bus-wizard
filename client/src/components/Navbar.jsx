@@ -1,29 +1,30 @@
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { Navbar, Nav, Container, Dropdown } from 'react-bootstrap';
 
-const Navbar = () => {
-    const { user, logout } = useAuth();
-
+export default function Navigation() {
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-danger">
-            <div className="container">
-                <Link className="navbar-brand" to="/">🏴‍☠️ TCGBusWizard</Link>
-                <div className="collapse navbar-collapse">
-                    <ul className="navbar-nav me-auto">
-                        <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/tournaments">Tournaments</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/ranking">Ranking</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/prizing">Prizing</Link></li>
-                    </ul>
-                    {user ? (
-                        <button className="btn btn-outline-light" onClick={logout}>Logout</button>
-                    ) : (
-                        <Link className="btn btn-outline-light" to="/login">Login</Link>
-                    )}
-                </div>
-            </div>
-        </nav>
+        <Navbar bg="warning" expand="lg" className="mb-4">
+            <Container>
+                <Navbar.Brand as={Link} to="/">🏴‍☠️ TCGBusWizard</Navbar.Brand>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse id="basic-navbar-nav">
+                    <Nav className="me-auto">
+                        <Nav.Link as={Link} to="/">Home</Nav.Link>
+                        <Nav.Link as={Link} to="/tournaments">Tournaments</Nav.Link>
+                        <Nav.Link as={Link} to="/ranking">Ranking</Nav.Link>
+                        <Nav.Link as={Link} to="/prizing">Prizing</Nav.Link>
+                    </Nav>
+                    <Dropdown>
+                        <Dropdown.Toggle variant="outline-dark" id="dropdown-basic">
+                            Login/Signup
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            <Dropdown.Item href="#login">Login</Dropdown.Item>
+                            <Dropdown.Item href="#signup">Sign Up</Dropdown.Item>
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </Navbar.Collapse>
+            </Container>
+        </Navbar>
     );
-};
-
-export default Navbar;
+}
