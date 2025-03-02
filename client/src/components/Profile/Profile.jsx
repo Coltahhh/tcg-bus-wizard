@@ -1,15 +1,19 @@
-// client/src/components/Profile/Profile.jsx
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../../firebase/firebaseConfig';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Profile() {
-    const [user] = useAuthState(auth);
+    const { currentUser } = useAuth();
 
     return (
-        <div className="profile-card">
-            <h2>{user?.displayName || 'Anonymous Pirate'}</h2>
-            <p>Email: {user?.email}</p>
-            <p>Member since: {user?.metadata.creationTime}</p>
+        <div className="container mt-4">
+            <h2>Profile</h2>
+            <div className="card">
+                <div className="card-body">
+                    <h5 className="card-title">{currentUser.email}</h5>
+                    <p className="card-text">
+                        Member since: {currentUser.metadata.creationTime}
+                    </p>
+                </div>
+            </div>
         </div>
     );
 }
