@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebaseConfig';
 import { useNavigate } from 'react-router-dom';
+import '../../styles/auth.css';
 
 export default function SignUp() {
     const [email, setEmail] = useState('');
@@ -12,11 +13,22 @@ export default function SignUp() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            navigate('/profile'); // Redirect after sign-up
-        } catch (err) {
-            setError(err.message);
+            console.log('Attempting signup with:', email); // Debug log
+
+            const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
+
+            console.log('Signup successful:', userCredential.user);
+            navigate('/profile');
+        } catch (error) {
+            console.error('Firebase error:', error.code, error.message);
+            setError(error.message.replace('Firebase: ', ''));
         }
     };
 
@@ -35,21 +47,19 @@ export default function SignUp() {
                     />
                 </div>
                 <div className="form-group">
-                    <label>Password</label>
+                    <label>Password (min 6 characters)</label>
                     <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        minLength={6}
                     />
                 </div>
-                <button type="submit" className="btn btn-primary">
+                <button type="submit" className="btn btn-warning">
                     Sign Up
                 </button>
             </form>
-            <p>
-                Already have an account? <a href="/login">Log in</a>
-            </p>
         </div>
     );
 }
