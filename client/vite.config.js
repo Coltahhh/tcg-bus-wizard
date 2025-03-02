@@ -1,15 +1,20 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
     plugins: [react()],
-    root: './',       // Explicitly set the root directory
+    root: path.resolve(__dirname, '.'), // Explicit root path
     build: {
-        outDir: 'dist', // Ensure this matches your build output
+        outDir: 'dist',
         rollupOptions: {
             input: {
-                main: './index.html', // Explicit path to index.html
-            },
-        },
+                main: path.resolve(__dirname, 'public/index.html') // Absolute path
+            }
+        }
     },
+    publicDir: 'public', // Explicit public directory
+    server: {
+        port: 3000
+    }
 });

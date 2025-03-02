@@ -14,6 +14,7 @@
     "firebase": "^11.4.0",
     "firebase-admin": "^13.1.0",
     "import-meta-resolve": "^4.1.0",
+    "path": "^0.12.7",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.9",
@@ -23,8 +24,8 @@
     "react-tournament-bracket": "^0.2.4"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.2.1",
-    "vite": "^5.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.14",
     "wrangler": "^3.111.0"
   }
 }
