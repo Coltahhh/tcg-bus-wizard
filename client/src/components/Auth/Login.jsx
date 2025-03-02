@@ -1,10 +1,11 @@
-// client/src/components/Auth/SignUp.jsx
+// client/src/components/Auth/Login.jsx
 import { useState } from 'react';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebaseConfig';
 import { useNavigate } from 'react-router-dom';
+import '../../styles/auth.css';
 
-export default function SignUp() {
+export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -13,8 +14,8 @@ export default function SignUp() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            navigate('/profile'); // Redirect after sign-up
+            await signInWithEmailAndPassword(auth, email, password);
+            navigate('/profile'); // Redirect after login
         } catch (err) {
             setError(err.message);
         }
@@ -22,7 +23,7 @@ export default function SignUp() {
 
     return (
         <div className="auth-container">
-            <h2>Sign Up</h2>
+            <h2>Login</h2>
             {error && <div className="alert alert-danger">{error}</div>}
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
@@ -44,11 +45,11 @@ export default function SignUp() {
                     />
                 </div>
                 <button type="submit" className="btn btn-primary">
-                    Sign Up
+                    Login
                 </button>
             </form>
             <p>
-                Already have an account? <a href="/login">Log in</a>
+                Don't have an account? <a href="/signup">Sign up</a>
             </p>
         </div>
     );

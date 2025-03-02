@@ -1,4 +1,5 @@
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import '../../styles/auth.css';
 
 const auth = getAuth();
 signInWithEmailAndPassword(auth, email, password)
