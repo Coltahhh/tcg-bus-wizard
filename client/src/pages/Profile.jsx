@@ -1,60 +1,106 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
+// client/src/components/Profile/Profile.jsx
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../../firebase/firebaseConfig';
+import { Button, Form, Card } from 'react-bootstrap';
 
-const Profile = () => {
-    const { userId } = useParams();
-    const [profile, setProfile] = useState(null);
+export default function Profile() {
+    const { currentUser } = useAuth();
+    const [profile, setProfile] = useState({
+        displayName: '',
+        bio: '',
+        avatar: ''
+    });
+    const [editMode, setEditMode] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchProfile = async () => {
-            try {
-                const response = await axios.get(`/api/users/${userId}`);
-                setProfile(response.data);
-            } catch (error) {
-                console.error('Error fetching profile:', error);
+            if (currentUser) {
+                const docRef = doc(db, 'users', currentUser.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    setProfile(docSnap.data());
+                }
+                setLoading(false);
             }
         };
-        fetchProfile();
-    }, [userId]);
 
-    if (!profile) return <div>Loading...</div>;
+        fetchProfile();
+    }, [currentUser]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const userRef = doc(db, 'users', currentUser.uid);
+            await updateDoc(userRef, profile);
+            setEditMode(false);
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        }
+    };
+
+    if (loading) return <div>Loading profile...</div>;
 
     return (
-        <div className="container mt-4">
-            <div className="row">
-                {/* Profile Header */}
-                <div className="col-md-4">
-                    <div className="card bg-dark text-white">
-                        <img src={profile.avatar} className="card-img-top" alt="Avatar" />
-                        <div className="card-body">
-                            <h2 className="card-title">{profile.username}</h2>
-                            <p className="card-text">{profile.bio}</p>
-                        </div>
-                    </div>
-                </div>
+        <div className="profile-container">
+            <Card className="profile-card">
+                <Card.Body>
+                    <Card.Title className="text-center mb-4">
+                        {editMode ? 'Edit Profile' : 'Your Profile'}
+                    </Card.Title>
 
-                {/* Tournament History */}
-                <div className="col-md-8">
-                    <h3>Tournament History</h3>
-                    <div className="row">
-                        {profile.joinedTournaments.map(tournament => (
-                            <div className="col-md-6 mb-3" key={tournament._id}>
-                                <div className="card bg-secondary text-white">
-                                    <div className="card-body">
-                                        <h5 className="card-title">{tournament.name}</h5>
-                                        <p className="card-text">
-                                            {new Date(tournament.date).toLocaleDateString()}
-                                        </p>
-                                    </div>
-                                </div>
+                    {editMode ? (
+                        <Form onSubmit={handleSubmit}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Display Name</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={profile.displayName}
+                                    onChange={(e) => setProfile({...profile, displayName: e.target.value})}
+                                    required
+                                />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3">
+                                <Form.Label>Bio</Form.Label>
+                                <Form.Control
+                                    as="textarea"
+                                    rows={3}
+                                    value={profile.bio}
+                                    onChange={(e) => setProfile({...profile, bio: e.target.value})}
+                                />
+                            </Form.Group>
+
+                            <div className="d-grid gap-2">
+                                <Button variant="primary" type="submit">
+                                    Save Changes
+                                </Button>
+                                <Button variant="secondary" onClick={() => setEditMode(false)}>
+                                    Cancel
+                                </Button>
                             </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
+                        </Form>
+                    ) : (
+                        <>
+                            <div className="profile-info">
+                                <h4>{profile.displayName || 'Anonymous Pirate'}</h4>
+                                <p className="text-muted">{currentUser.email}</p>
+                                {profile.bio && <p className="bio">{profile.bio}</p>}
+                            </div>
+                            <Button
+                                variant="outline-primary"
+                                onClick={() => setEditMode(true)}
+                                className="mt-3"
+                            >
+                                Edit Profile
+                            </Button>
+                        </>
+                    )}
+                </Card.Body>
+            </Card>
         </div>
     );
-};
-
-export default Profile;
+}

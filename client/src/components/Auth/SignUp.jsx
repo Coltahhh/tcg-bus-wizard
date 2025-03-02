@@ -4,6 +4,8 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/auth.css';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '../../firebase/firebaseConfig';
 
 export default function SignUp() {
     const [email, setEmail] = useState('');
@@ -18,11 +20,12 @@ export default function SignUp() {
         try {
             console.log('Attempting signup with:', email); // Debug log
 
-            const userCredential = await createUserWithEmailAndPassword(
-                auth,
-                email,
-                password
-            );
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await setDoc(doc(db, 'users', userCredential.user.uid), {
+                displayName: email.split('@')[0],
+                createdAt: new Date().toISOString(),
+                email: email
+            });
 
             console.log('Signup successful:', userCredential.user);
             navigate('/profile');

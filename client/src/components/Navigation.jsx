@@ -7,6 +7,7 @@ export default function Navigation() {
             <Link to="/">Home</Link>
             <Link to="/login">Login</Link>
             <Link to="/signup">Sign Up</Link>
+            <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
         </nav>
     );
 }

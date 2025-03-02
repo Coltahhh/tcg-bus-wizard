@@ -1,8 +1,8 @@
-// client/src/components/Profile/UserProfile.js
+// client/src/components/Profile/Profile.jsx
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../firebase/firebaseConfig';
 
-export default function UserProfile() {
+export default function Profile() {
     const [user] = useAuthState(auth);
 
     return (
