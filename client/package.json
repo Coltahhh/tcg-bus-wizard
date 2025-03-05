@@ -13,6 +13,7 @@
     "@firebase/auth": "1.9.1",
     "@firebase/firestore": "^3.11.0",
     "@firebase/storage": "^0.12.6",
+    "@g-loot/react-tournament-brackets": "^1.0.31-rc",
     "@popperjs/core": "^2.11.8",
     "axios": "^1.6.2",
     "bootstrap": "^5.3.3",
