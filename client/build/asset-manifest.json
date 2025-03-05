@@ -1,0 +1,12 @@
+{
+  "files": {
+    "main.js": "/static/js/main.6f4bcae1.js",
+    "static/media/_interop_require_wildcard.cjs": "/static/media/_interop_require_wildcard.27c5c3a655c2ad09bbd0.cjs",
+    "index.html": "/index.html",
+    "static/media/_interop_require_default.cjs": "/static/media/_interop_require_default.66b466f601bfd91dbfa9.cjs",
+    "main.6f4bcae1.js.map": "/static/js/main.6f4bcae1.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.6f4bcae1.js"
+  ]
+}

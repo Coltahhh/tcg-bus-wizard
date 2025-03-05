@@ -1,30 +1,27 @@
 import { Link } from 'react-router-dom';
-import { Navbar, Nav, Container, Dropdown } from 'react-bootstrap';
+import { useAuth } from '../contexts/AuthContext';
 
-export default function Navigation() {
+export default function Navbar() {
+    const { currentUser, logout } = useAuth();
+
     return (
-        <Navbar bg="warning" expand="lg" className="mb-4">
-            <Container>
-                <Navbar.Brand as={Link} to="/">🏴‍☠️ TCGBusWizard</Navbar.Brand>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="me-auto">
-                        <Nav.Link as={Link} to="/">Home</Nav.Link>
-                        <Nav.Link as={Link} to="/tournaments">Tournaments</Nav.Link>
-                        <Nav.Link as={Link} to="/ranking">Ranking</Nav.Link>
-                        <Nav.Link as={Link} to="/prizing">Prizing</Nav.Link>
-                    </Nav>
-                    <Dropdown>
-                        <Dropdown.Toggle variant="outline-dark" id="dropdown-basic">
-                            Login/Signup
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            <Dropdown.Item href="#login">Login</Dropdown.Item>
-                            <Dropdown.Item href="#signup">Sign Up</Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
-                </Navbar.Collapse>
-            </Container>
-        </Navbar>
+        <nav>
+            <ul>
+                <li><Link to="/">Home</Link></li>
+                <li><Link to="/rankings">Rankings</Link></li>
+                <li><Link to="/brackets">Brackets</Link></li>
+                {currentUser ? (
+                    <>
+                        <li><Link to="/profile">Profile</Link></li>
+                        <li><button onClick={logout}>Logout</button></li>
+                    </>
+                ) : (
+                    <>
+                        <li><Link to="/login">Login</Link></li>
+                        <li><Link to="/register">Register</Link></li>
+                    </>
+                )}
+            </ul>
+        </nav>
     );
 }
