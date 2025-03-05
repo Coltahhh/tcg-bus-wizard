@@ -1,4 +1,4 @@
-import { auth } from '../lib/firebase';
+import { auth } from '../firebase/firebaseConfig'; // Adjusted path
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 export const AuthContext = createContext();

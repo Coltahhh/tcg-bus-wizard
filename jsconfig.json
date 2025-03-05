@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@firebase/*": ["./src/firebase/*"],
+      "@context/*": ["./src/context/*"]
+    }
+  }
+}

@@ -3,17 +3,24 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "next dev",
+    "build": "next build",
+    "preview": "vite preview",
+    "start": "next start"
   },
   "dependencies": {
+    "@firebase/app": "^0.11.2",
+    "@firebase/auth": "^1.9.1",
+    "@firebase/firestore": "^4.7.9",
+    "@firebase/storage": "^0.13.7",
     "@popperjs/core": "^2.11.8",
     "axios": "^1.6.2",
     "bootstrap": "^5.3.3",
+    "context": "^3.0.33",
     "firebase": "^11.4.0",
     "firebase-admin": "^13.1.0",
     "import-meta-resolve": "^4.1.0",
+    "next": "^15.2.1",
     "path": "^0.12.7",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",

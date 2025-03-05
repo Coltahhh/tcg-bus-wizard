@@ -1,12 +1,13 @@
 // client/src/components/Profile/Profile.jsx
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { AuthContext } from '@context/AuthContext';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../firebase/firebaseConfig';
+import { auth } from '@firebase/firebaseConfig';
 import { Button, Form, Card } from 'react-bootstrap';
 
+
 export default function Profile() {
-    const { currentUser } = useAuth();
+    const { currentUser } = AuthContext();
     const [profile, setProfile] = useState({
         displayName: '',
         bio: '',
@@ -18,7 +19,7 @@ export default function Profile() {
     useEffect(() => {
         const fetchProfile = async () => {
             if (currentUser) {
-                const docRef = doc(db, 'users', currentUser.uid);
+                const docRef = doc(auth, 'users', currentUser.uid);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
