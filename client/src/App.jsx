@@ -1,13 +1,25 @@
-export default function App() {
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import Home from './pages/Home';
+import Rankings from './pages/Rankings';
+import Brackets from './pages/Brackets';
+import Login from './pages/Login';
+import Register from './pages/Register';
+
+function App() {
     return (
-        <div style={{
-            backgroundColor: 'black',
-            color: 'white',
-            minHeight: '100vh',
-            padding: '2rem'
-        }}>
-            <h1>TCGBusWizard is Working! 🎉</h1>
-            <p>If you see this, React is rendering correctly</p>
-        </div>
+        <AuthProvider>
+            <Router>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/rankings" element={<Rankings />} />
+                    <Route path="/brackets" element={<Brackets />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                </Routes>
+            </Router>
+        </AuthProvider>
     );
 }
+
+export default App;

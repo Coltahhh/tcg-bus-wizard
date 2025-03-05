@@ -1,0 +1,14 @@
+{
+  "/_app": "pages/_app.js",
+  "/_document": "pages/_document.js",
+  "/_error": "pages/_error.js",
+  "/VerifyEmail": "pages/VerifyEmail.js",
+  "/VerificationRequired": "pages/VerificationRequired.js",
+  "/api/check-username": "pages/api/check-username.js",
+  "/firebase/firebaseConfig": "pages/firebase/firebaseConfig.js",
+  "/": "pages/index.js",
+  "/prizing": "pages/prizing.js",
+  "/profile": "pages/profile.js",
+  "/ranking": "pages/ranking.js",
+  "/tournaments": "pages/tournaments.js"
+}
