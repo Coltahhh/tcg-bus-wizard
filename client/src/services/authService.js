@@ -5,7 +5,7 @@ import {
     signOut,
     updateProfile
 } from "firebase/auth";
-import { auth } from "../firebase/firebaseConfig";
+import { auth } from "../pages/firebase/firebaseConfig";
 
 export const register = async (email, password, displayName) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);

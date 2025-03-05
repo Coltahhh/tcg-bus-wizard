@@ -1,11 +1,11 @@
 // client/src/components/Auth/SignUp.jsx
 import { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../firebase/firebaseConfig';
+import { auth } from '../../pages/firebase/firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/auth.css';
 import { doc, setDoc } from 'firebase/firestore';
-import { db } from '../../firebase/firebaseConfig';
+import { db } from '../../pages/firebase/firebaseConfig';
 
 export default function SignUp() {
     const [email, setEmail] = useState('');

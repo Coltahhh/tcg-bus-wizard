@@ -1,13 +1,13 @@
-// pages/_app.js
-import '../styles/globals.css'
-import Layout from '../components/Layout'
+// src/pages/_app.js
+import { AuthProvider } from '../context/AuthContext';
+import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }) {
     return (
-        <Layout>
+        <AuthProvider>
             <Component {...pageProps} />
-        </Layout>
-    )
+        </AuthProvider>
+    );
 }
 
-export default MyApp
+export default MyApp;

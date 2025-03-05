@@ -1,4 +1,4 @@
-import { db } from '@firebase/firebaseConfig';
+import { db } from '../firebase/firebaseConfig'; // Adjusted path
 import { collection, query, where, getDocs } from 'firebase/firestore';
 
 export default async function handler(req, res) {

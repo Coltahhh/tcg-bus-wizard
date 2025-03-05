@@ -1,12 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    reactStrictMode: true,
-    webpack: (config) => {
-        config.resolve.alias = {
-            ...config.resolve.alias,
-            '@firebase': './src/firebase',
-            '@context': './src/context'
-        };
+    webpack: (config, { isServer }) => {
+        if (!isServer) {
+            config.resolve.fallback = {
+                ...config.resolve.fallback,
+                net: false,
+                tls: false,
+                dns: false,
+                http2: false,
+                child_process: false,
+                fs: false
+            };
+        }
         return config;
     }
 };
