@@ -11,6 +11,7 @@ import authRoutes from './routes/authRoutes.js';
 import tournamentRoutes from './routes/tournamentRoutes.js';
 import rankingRoutes from './routes/rankingRoutes.js';
 
+
 // Configuration
 dotenv.config();
 const app = express();
@@ -73,14 +74,11 @@ app.get('/api/health', (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    logger.error(`${err.status || 500} - ${err.message}`);
-    res.status(err.status || 500).json({
-        error: {
-            message: process.env.NODE_ENV === 'production'
-                ? 'Server error'
-                : err.message,
-            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
-        }
+    console.error(err.stack);
+    res.status(500).json({
+        error: process.env.NODE_ENV === 'production'
+            ? 'Something went wrong!'
+            : err.message
     });
 });
 

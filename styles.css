@@ -1,0 +1,157 @@
+:root {
+    --primary-color: #ffd700;  /* Yellow */
+    --secondary-color: #dc3545;  /* Red */
+    --background-color: #000000;  /* Black */
+    --text-color: #ffffff;  /* White */
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.navbar {
+    background-color: var(--primary-color) !important;
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.navbar-brand, .nav-link {
+    color: var(--background-color) !important;
+}
+
+.nav-link.active {
+    border-bottom: 3px solid var(--secondary-color) !important;
+    color: var(--secondary-color) !important;
+}
+
+.match {
+    border: 2px solid var(--primary-color);
+    background-color: #1a1a1a;
+}
+
+.match::after {
+    background: var(--primary-color);
+}
+
+.winner {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.card {
+    background-color: #1a1a1a;
+    border: 1px solid var(--primary-color);
+}
+
+.btn-outline-warning {
+    border-color: var(--primary-color);
+    color: black !important;
+}
+
+.btn-outline-warning:hover {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+}
+
+.table-dark {
+    background-color: #1a1a1a;
+    --bs-table-bg: #1a1a1a;
+    --bs-table-striped-bg: #262626;
+    border-color: var(--primary-color);
+}
+
+.modal-content {
+    background-color: #1a1a1a;
+    border: 2px solid var(--primary-color);
+}
+
+.form-control {
+    background-color: #333333;
+    border: 1px solid var(--primary-color);
+    color: var(--text-color);
+}
+
+.dropdown-menu {
+    background-color: #1a1a1a;
+    border: 1px solid var(--primary-color);
+}
+
+.dropdown-item {
+    color: var(--primary-color);
+}
+
+.dropdown-item:hover {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.bracket {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    overflow-x: auto;
+}
+
+.round {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin: 0 40px;
+}
+
+.match {
+    padding: 15px;
+    margin: 20px 0;
+    min-width: 200px;
+    position: relative;
+}
+
+.match::after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 2px;
+    right: -40px;
+    top: 50%;
+}
+
+.round:last-child .match::after {
+    display: none;
+}
+
+.player {
+    padding: 5px;
+    margin: 5px 0;
+    background: #333;
+    border-radius: 4px;
+}
+
+.tournament-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.tournament-card:hover {
+    transform: scale(1.05);
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+.card-title {
+    color: var(--primary-color) !important;
+    font-weight: bold;
+}
+
+.card-text {
+    color: var(--text-color) !important;
+    font-size: 1.1rem;
+}
+#createTournamentModal .modal-content {
+    background-color: #1a1a1a;
+    border: 2px solid var(--primary-color);
+}

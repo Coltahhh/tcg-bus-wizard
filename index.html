@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TCGBusWizard - One Piece TCG Tournament Brackets</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #ffd700;  --secondary-color: #dc3545;
+      --background-color: #000000;  --text-color: #ffffff;
+    }
+    body { background-color: var(--background-color); color: var(--text-color); }
+    .navbar { background-color: var(--primary-color) !important; border-bottom: 2px solid var(--secondary-color); }
+    .navbar-brand, .nav-link { color: var(--background-color) !important; }
+    .nav-link.active { border-bottom: 3px solid var(--secondary-color) !important; color: var(--secondary-color) !important; }
+    .match { border: 2px solid var(--primary-color); background-color: #1a1a1a; position: relative; }
+    .match::after { content: ''; position: absolute; width: 40px; height: 2px; right: -40px; top: 50%; background: var(--primary-color); }
+    .round:last-child .match::after { display: none; }
+    .player { padding: 5px; margin: 5px 0; background: #333; border-radius: 4px; }
+    .winner { background-color: var(--secondary-color); color: white; }
+    .card { background-color: #1a1a1a; border: 1px solid var(--primary-color); }
+    .btn-outline-warning { border-color: var(--primary-color); color: black !important; }
+    .btn-outline-warning:hover { background-color: var(--primary-color); color: var(--background-color); }
+    .table-dark { background-color: #1a1a1a; --bs-table-bg: #1a1a1a; --bs-table-striped-bg: #262626; }
+    .modal-content { background-color: #1a1a1a; border: 2px solid var(--primary-color); }
+    .form-control { background-color: #333333; border: 1px solid var(--primary-color); color: var(--text-color); }
+    .dropdown-menu { background-color: #1a1a1a; border: 1px solid var(--primary-color); }
+    .dropdown-item { color: var(--primary-color); }
+    .dropdown-item:hover { background-color: var(--secondary-color); color: white; }
+    .bracket { display: flex; justify-content: center; padding: 20px; overflow-x: auto; }
+    .round { display: flex; flex-direction: column; justify-content: space-around; margin: 0 40px; }
+    .tournament-card { cursor: pointer; transition: transform 0.2s; }
+    .tournament-card:hover { transform: scale(1.05); }
+    .section { display: none; }
+    .section.active { display: block; }
+    .card-title { color: var(--primary-color) !important; font-weight: bold; }
+    .card-text { color: var(--text-color) !important; font-size: 1.1rem; }
+    #bracketView { display: none; }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light">
+  <div class="container">
+    <a class="navbar-brand" href="#">🏴‍☠️ TCGBusWizard</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link active" href="#home" data-section="home">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#tournaments" data-section="tournaments">Tournaments</a></li>
+        <li class="nav-item"><a class="nav-link" href="#ranking" data-section="ranking">Ranking</a></li>
+        <li class="nav-item"><a class="nav-link" href="#prizing" data-section="prizing">Prizing</a></li>
+      </ul>
+      <div class="dropdown">
+        <a class="btn btn-outline-warning dropdown-toggle" href="#" role="button" id="loginDropdown" data-bs-toggle="dropdown">
+          Login/Signup
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
+          <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#signupModal">Sign Up</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <!-- Sections -->
+  <div id="home" class="section active">
+    <h2>Welcome to TCGBusWizard!</h2>
+    <p>Track your One Piece TCG tournament results and rankings.</p>
+  </div>
+
+  <div id="tournaments" class="section">
+    <div class="row mb-4">
+      <div class="col-12">
+        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#createTournamentModal">
+          Create New Tournament
+        </button>
+      </div>
+    </div>
+    <div id="tournamentList" class="row"></div>
+    <div id="bracketView">
+      <button class="btn btn-secondary mb-3" onclick="showTournamentList()">← Back to Tournaments</button>
+      <div id="bracketContainer" class="bracket"></div>
+    </div>
+  </div>
+
+  <div id="ranking" class="section">
+    <h2>Player Rankings</h2>
+    <table class="table table-dark table-striped">
+      <thead><tr><th>Rank</th><th>Player</th><th>Points</th><th>Wins</th></tr></thead>
+      <tbody id="rankingBody"></tbody>
+    </table>
+  </div>
+
+  <div id="prizing" class="section">
+    <h2>Tournament Prizes</h2>
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="card"><div class="card-body">
+          <h5 class="card-title">1st Place</h5>
+          <p class="card-text">- Exclusive promo card<br>- Booster box<br>- Trophy</p>
+        </div></div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card"><div class="card-body">
+          <h5 class="card-title">2nd Place</h5>
+          <p class="card-text">- Booster box<br>- Playmat</p>
+        </div></div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card"><div class="card-body">
+          <h5 class="card-title">3rd-4th Place</h5>
+          <p class="card-text">- Booster packs<br>- Deck box</p>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal fade" id="createTournamentModal" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Create Tournament</h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    </div>
+    <div class="modal-body">
+      <form id="tournamentForm">
+        <div class="mb-3"><label class="form-label">Tournament Name</label><input type="text" class="form-control" required></div>
+        <div class="mb-3"><label class="form-label">Date</label><input type="date" class="form-control" required></div>
+        <div class="mb-3"><label class="form-label">Participants</label><input type="number" class="form-control" min="2" max="32" required></div>
+        <button type="submit" class="btn btn-warning">Create</button>
+      </form>
+    </div>
+  </div></div>
+</div>
+
+<div class="modal fade" id="loginModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Login</h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    </div>
+    <div class="modal-body">
+      <form><div class="mb-3"><label class="form-label">Email</label><input type="email" class="form-control" required></div>
+        <div class="mb-3"><label class="form-label">Password</label><input type="password" class="form-control" required></div>
+        <button type="submit" class="btn btn-warning">Login</button></form>
+    </div>
+  </div></div>
+</div>
+
+<div class="modal fade" id="signupModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Sign Up</h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    </div>
+    <div class="modal-body">
+      <form><div class="mb-3"><label class="form-label">Username</label><input type="text" class="form-control" required></div>
+        <div class="mb-3"><label class="form-label">Email</label><input type="email" class="form-control" required></div>
+        <div class="mb-3"><label class="form-label">Password</label><input type="password" class="form-control" required></div>
+        <button type="submit" class="btn btn-warning">Sign Up</button></form>
+    </div>
+  </div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // script.js
+  // Initialize data storage and application state
+  let currentUser = null;
+
+  // Data initialization
+  if (!localStorage.getItem('tournaments')) {
+    localStorage.setItem('tournaments', JSON.stringify([
+      {
+        id: 1,
+        name: "Grand Line Cup 2023",
+        date: "2023-11-15",
+        participants: 8,
+        bracket: {
+          final: {
+            match1: {
+              players: ["Player A", "Player B"],
+              winner: "Player A",
+              children: ["semifinal1", "semifinal2"]
+            }
+          },
+          semifinal: {
+            semifinal1: {
+              players: ["Player A", "Player C"],
+              winner: "Player A",
+              children: ["quarterfinal1", "quarterfinal2"]
+            },
+            semifinal2: {
+              players: ["Player B", "Player D"],
+              winner: "Player B",
+              children: ["quarterfinal3", "quarterfinal4"]
+            }
+          },
+          quarterfinal: {
+            quarterfinal1: { players: ["Player A", "Player E"], winner: "Player A" },
+            quarterfinal2: { players: ["Player C", "Player F"], winner: "Player C" },
+            quarterfinal3: { players: ["Player B", "Player G"], winner: "Player B" },
+            quarterfinal4: { players: ["Player D", "Player H"], winner: "Player D" }
+          }
+        }
+      }
+    ]));
+  }
+
+  if (!localStorage.getItem('rankings')) {
+    localStorage.setItem('rankings', JSON.stringify([
+      { player: "Player A", points: 450, wins: 15 },
+      { player: "Player B", points: 380, wins: 12 },
+      { player: "Player C", points: 320, wins: 10 }
+    ]));
+  }
+
+  // Core application functions
+  function showSection(sectionId, event) {
+    if (event) event.preventDefault();
+    const validSections = ['home', 'tournaments', 'ranking', 'prizing'];
+    const targetSection = validSections.includes(sectionId) ? sectionId : 'home';
+
+    document.querySelectorAll('.section').forEach(section => {
+      section.classList.remove('active');
+    });
+
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.classList.remove('active');
+    });
+
+    document.getElementById(targetSection).classList.add('active');
+    document.querySelector(`[data-section="${targetSection}"]`).classList.add('active');
+    window.location.hash = targetSection;
+  }
+
+  function initTournamentList() {
+    const container = document.getElementById('tournamentList');
+    container.innerHTML = '';
+    const tournaments = JSON.parse(localStorage.getItem('tournaments'));
+
+    tournaments.forEach(tournament => {
+      const card = document.createElement('div');
+      card.className = 'col-md-4 mb-4';
+      card.innerHTML = `
+      <div class="tournament-card card" onclick="showBracket(${tournament.id})">
+        <div class="card-body">
+          <h5 class="card-title">${tournament.name}</h5>
+          <p class="card-text">${tournament.date}</p>
+          <p class="card-text">${tournament.participants} Participants</p>
+        </div>
+      </div>
+    `;
+      container.appendChild(card);
+    });
+  }
+
+  function showBracket(tournamentId) {
+    const tournaments = JSON.parse(localStorage.getItem('tournaments'));
+    const tournament = tournaments.find(t => t.id === tournamentId);
+
+    document.getElementById('tournamentList').classList.add('d-none');
+    document.getElementById('bracketView').classList.remove('d-none');
+
+    const container = document.getElementById('bracketContainer');
+    container.innerHTML = '';
+
+    const rounds = ['quarterfinal', 'semifinal', 'final'];
+    rounds.forEach(round => {
+      const roundDiv = document.createElement('div');
+      roundDiv.className = 'round';
+      roundDiv.innerHTML = `<h4 class="text-center mb-4">${round.charAt(0).toUpperCase() + round.slice(1)}</h4>`;
+
+      Object.values(tournament.bracket[round]).forEach(match => {
+        const matchDiv = document.createElement('div');
+        matchDiv.className = 'match';
+        match.players.forEach(player => {
+          const playerDiv = document.createElement('div');
+          playerDiv.className = `player ${player === match.winner ? 'winner' : ''}`;
+          playerDiv.textContent = player;
+          matchDiv.appendChild(playerDiv);
+        });
+        roundDiv.appendChild(matchDiv);
+      });
+      container.appendChild(roundDiv);
+    });
+  }
+
+  function showTournamentList() {
+    document.getElementById('tournamentList').classList.remove('d-none');
+    document.getElementById('bracketView').classList.add('d-none');
+  }
+
+  function updateRankings() {
+    const tbody = document.getElementById('rankingBody');
+    tbody.innerHTML = '';
+    const rankings = JSON.parse(localStorage.getItem('rankings'));
+
+    rankings.sort((a, b) => b.points - a.points).forEach((player, index) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${player.player}</td>
+      <td>${player.points}</td>
+      <td>${player.wins}</td>
+    `;
+      tbody.appendChild(row);
+    });
+  }
+
+  function handleTournamentSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    const newTournament = {
+      id: Date.now(),
+      name: form[0].value,
+      date: form[1].value,
+      participants: parseInt(form[2].value),
+      bracket: generateSimpleBracket(parseInt(form[2].value))
+    };
+
+    const tournaments = JSON.parse(localStorage.getItem('tournaments'));
+    tournaments.push(newTournament);
+    localStorage.setItem('tournaments', JSON.stringify(tournaments));
+
+    form.reset();
+    initTournamentList();
+    bootstrap.Modal.getInstance(document.getElementById('createTournamentModal')).hide();
+  }
+
+  function generateSimpleBracket(participantCount) {
+    return {
+      final: {
+        match1: {
+          players: ["TBD", "TBD"],
+          winner: null,
+          children: []
+        }
+      }
+    };
+  }
+
+  // Authentication functions
+  function handleLogin(e) {
+    e.preventDefault();
+    currentUser = "Guest";
+    updateAuthState();
+    bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+  }
+
+  function handleSignup(e) {
+    e.preventDefault();
+    currentUser = "Guest";
+    updateAuthState();
+    bootstrap.Modal.getInstance(document.getElementById('signupModal')).hide();
+  }
+
+  function updateAuthState() {
+    const authBtn = document.querySelector('#loginDropdown');
+    authBtn.textContent = currentUser ? `Welcome ${currentUser}` : 'Login/Signup';
+  }
+
+  // Event listeners and initialization
+  function initApp() {
+    // Navigation
+    window.addEventListener('hashchange', () => {
+      const sectionId = window.location.hash.substring(1) || 'home';
+      showSection(sectionId);
+    });
+
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const sectionId = this.getAttribute('data-section');
+        showSection(sectionId, e);
+      });
+    });
+
+    // Initial state
+    const initialSection = window.location.hash.substring(1) || 'home';
+    showSection(initialSection);
+    initTournamentList();
+    updateRankings();
+
+    // Form handlers
+    document.getElementById('tournamentForm').addEventListener('submit', handleTournamentSubmit);
+    document.querySelector('#loginModal form').addEventListener('submit', handleLogin);
+    document.querySelector('#signupModal form').addEventListener('submit', handleSignup);
+  }
+
+  // Start application
+  document.addEventListener('DOMContentLoaded', initApp);
+</script>
+</body>
+</html>
