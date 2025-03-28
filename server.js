@@ -1,6 +1,16 @@
+import { WebSocketServer } from 'ws';
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const wss = new WebSocketServer({ port: 8080 });
+
+wss.on('connection', (ws) => {
+    ws.on('message', (message) => {
+        // Handle bracket updates
+    });
+});
+
 require('dotenv').config();
 
 const app = express();
