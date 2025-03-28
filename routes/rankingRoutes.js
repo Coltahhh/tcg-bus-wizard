@@ -1,180 +1,233 @@
-const router = require('express').Router();
-const { check, validationResult } = require('express-validator');
-const auth = require('../middleware/auth');
-const Tournament = require('../models/Tournament');
-const User = require('../models/User');
+import express from 'express';
+import { check, validationResult } from 'express-validator';
+import auth from '../middleware/auth.js';
+import admin from '../middleware/admin.js';
+import Ranking from '../models/Ranking.js';
+import User from '../models/User.js';
+import Tournament from '../models/Tournament.js';
+import redisClient from '../config/redis.js';
 
-// @route   GET api/tournaments
-// @desc    Get all tournaments
-router.get('/', async (req, res) => {
+const router = express.Router();
+
+// Cache middleware
+const cache = (duration) => async (req, res, next) => {
+    const key = `ranking:${req.originalUrl}`;
+    const cachedData = await redisClient.get(key);
+
+    if (cachedData) {
+        return res.json(JSON.parse(cachedData));
+    }
+
+    res.originalSend = res.json;
+    res.json = (body) => {
+        redisClient.setEx(key, duration, JSON.stringify(body));
+        res.originalSend(body);
+    };
+    next();
+};
+
+// @route   GET /api/rankings/leaderboard
+// @desc    Get paginated leaderboard
+router.get('/leaderboard', cache(300), async (req, res) => {
     try {
-        const { status } = req.query;
-        const filter = status ? { status } : {};
+        const { page = 1, limit = 10 } = req.query;
+        const options = {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sort: { totalPoints: -1 },
+            populate: {
+                path: 'user',
+                select: 'username avatar profile'
+            }
+        };
 
-        const tournaments = await Tournament.find(filter)
-            .populate('organizer', 'username')
-            .populate('participants', 'username')
-            .sort({ date: -1 });
+        const rankings = await Ranking.paginate({}, options);
 
-        res.json(tournaments);
+        res.json({
+            rankings: rankings.docs,
+            totalPages: rankings.totalPages,
+            currentPage: rankings.page
+        });
+
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
     }
 });
 
-// @route   POST api/tournaments
-// @desc    Create new tournament
-router.post(
-    '/',
-    [
-        auth,
-        [
-            check('name', 'Tournament name is required').not().isEmpty(),
-            check('date', 'Valid date is required').isISO8601(),
-            check('participants', 'Participants must be an array').optional().isArray()
-        ]
-    ],
-    async (req, res) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-
-        try {
-            const { name, date, participants = [] } = req.body;
-
-            // Verify participants exist
-            const validParticipants = await User.find({
-                _id: { $in: participants }
-            }).select('_id');
-
-            const tournament = new Tournament({
-                name,
-                date,
-                organizer: req.user.id,
-                participants: validParticipants.map(p => p._id),
-                bracket: Tournament.createBracket(validParticipants)
-            });
-
-            await tournament.save();
-            res.json(tournament);
-        } catch (err) {
-            console.error(err.message);
-            res.status(500).send('Server Error');
-        }
-    }
-);
-
-// @route   GET api/tournaments/:id
-// @desc    Get tournament by ID
-router.get('/:id', async (req, res) => {
+// @route   GET /api/rankings/user/:userId
+// @desc    Get user ranking details
+router.get('/user/:userId', cache(180), async (req, res) => {
     try {
-        const tournament = await Tournament.findById(req.params.id)
-            .populate('organizer', 'username')
-            .populate('participants', 'username')
-            .populate('bracket.rounds.matches.players', 'username');
+        const ranking = await Ranking.findOne({ user: req.params.userId })
+            .populate({
+                path: 'tournamentPoints.tournament',
+                select: 'name date location'
+            })
+            .populate('user', 'username avatar');
+
+        if (!ranking) {
+            return res.status(404).json({ msg: 'Ranking not found' });
+        }
+
+        // Calculate recent performance
+        const recentResults = ranking.recentResults.slice(-10);
+        const winRate = recentResults.filter(r => r === 'win').length / 10 * 100;
+
+        res.json({
+            ...ranking.toObject(),
+            recentPerformance: {
+                winRate,
+                wins: recentResults.filter(r => r === 'win').length,
+                losses: recentResults.filter(r => r === 'loss').length
+            }
+        });
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   POST /api/rankings/update
+// @desc    Update rankings after tournament (Admin only)
+router.post('/update', [
+    auth,
+    admin,
+    check('tournamentId', 'Tournament ID is required').isMongoId(),
+    check('results', 'Results array is required').isArray()
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const session = await Ranking.startSession();
+    session.startTransaction();
+
+    try {
+        const { tournamentId, results } = req.body;
+        const tournament = await Tournament.findById(tournamentId);
 
         if (!tournament) {
             return res.status(404).json({ msg: 'Tournament not found' });
         }
 
-        res.json(tournament);
+        for (const result of results) {
+            const { userId, points, placement } = result;
+
+            // Update ranking
+            await Ranking.findOneAndUpdate(
+                { user: userId },
+                {
+                    $inc: {
+                        totalPoints: points,
+                        tournamentsPlayed: 1,
+                        wins: placement === 1 ? 1 : 0,
+                        losses: placement > 4 ? 1 : 0
+                    },
+                    $push: {
+                        tournamentPoints: {
+                            tournament: tournamentId,
+                            points,
+                            placement
+                        },
+                        recentResults: {
+                            $each: [placement <= 4 ? 'win' : 'loss'],
+                            $slice: -10
+                        },
+                        rankingHistory: {
+                            date: new Date(),
+                            points: totalPoints + points,
+                            rank: 0 // Will be recalculated
+                        }
+                    }
+                },
+                { session, new: true }
+            );
+        }
+
+        // Recalculate global rankings
+        const allRankings = await Ranking.find().sort({ totalPoints: -1 }).session(session);
+        await Promise.all(allRankings.map(async (ranking, index) => {
+            ranking.currentRank = index + 1;
+            await ranking.save({ session });
+        }));
+
+        await session.commitTransaction();
+        res.json({ msg: 'Rankings updated successfully' });
+
     } catch (err) {
+        await session.abortTransaction();
         console.error(err.message);
         res.status(500).send('Server Error');
+    } finally {
+        session.endSession();
+        redisClient.flushDb(); // Clear cache after update
     }
 });
 
-// @route   PUT api/tournaments/:id
-// @desc    Update tournament
-router.put('/:id', auth, async (req, res) => {
+// @route   GET /api/rankings/history/:userId
+// @desc    Get ranking history with filters
+router.get('/history/:userId', async (req, res) => {
     try {
-        let tournament = await Tournament.findById(req.params.id);
+        const { from, to, interval = 'weekly' } = req.query;
+        const matchStage = { user: req.params.userId };
 
-        if (!tournament) {
-            return res.status(404).json({ msg: 'Tournament not found' });
+        if (from && to) {
+            matchStage['rankingHistory.date'] = {
+                $gte: new Date(from),
+                $lte: new Date(to)
+            };
         }
 
-        // Check if user is organizer
-        if (tournament.organizer.toString() !== req.user.id) {
-            return res.status(401).json({ msg: 'Not authorized' });
-        }
+        const aggregation = [
+            { $match: matchStage },
+            { $unwind: '$rankingHistory' },
+            { $sort: { 'rankingHistory.date': -1 } },
+            { $group: {
+                    _id: {
+                        $dateTrunc: {
+                            date: '$rankingHistory.date',
+                            unit: interval === 'daily' ? 'day' : 'week'
+                        }
+                    },
+                    averagePoints: { $avg: '$rankingHistory.points' },
+                    averageRank: { $avg: '$rankingHistory.rank' }
+                }},
+            { $project: {
+                    date: '$_id',
+                    averagePoints: 1,
+                    averageRank: 1,
+                    _id: 0
+                }},
+            { $sort: { date: 1 } }
+        ];
 
-        const updates = Object.keys(req.body);
-        const allowedUpdates = ['name', 'date', 'status', 'prizeStructure'];
-        const isValidOperation = updates.every(update => allowedUpdates.includes(update));
+        const history = await Ranking.aggregate(aggregation);
+        res.json(history);
 
-        if (!isValidOperation) {
-            return res.status(400).json({ msg: 'Invalid updates' });
-        }
-
-        updates.forEach(update => tournament[update] = req.body[update]);
-        await tournament.save();
-        res.json(tournament);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
     }
 });
 
-// @route   POST api/tournaments/:id/participants
-// @desc    Add participant to tournament
-router.post('/:id/participants', auth, async (req, res) => {
+// @route   DELETE /api/rankings/history
+// @desc    Clear ranking history (Admin only)
+router.delete('/history', [auth, admin], async (req, res) => {
     try {
-        const tournament = await Tournament.findById(req.params.id);
-        const user = await User.findById(req.body.userId);
+        await Ranking.updateMany(
+            {},
+            { $set: { rankingHistory: [] } }
+        );
 
-        if (!user) {
-            return res.status(404).json({ msg: 'User not found' });
-        }
-
-        if (tournament.participants.includes(user._id)) {
-            return res.status(400).json({ msg: 'User already participating' });
-        }
-
-        tournament.participants.push(user._id);
-        await tournament.save();
-        res.json(tournament.participants);
+        redisClient.flushDb();
+        res.json({ msg: 'Ranking history cleared' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
     }
 });
 
-// @route   POST api/tournaments/:id/bracket
-// @desc    Update match result
-router.post('/:id/bracket', auth, async (req, res) => {
-    try {
-        const { roundIndex, matchId, winnerId } = req.body;
-        const tournament = await Tournament.findById(req.params.id);
-
-        // Check if user is organizer
-        if (tournament.organizer.toString() !== req.user.id) {
-            return res.status(401).json({ msg: 'Not authorized' });
-        }
-
-        const round = tournament.bracket.rounds[roundIndex];
-        const match = round.matches.get(matchId);
-
-        if (!match) {
-            return res.status(404).json({ msg: 'Match not found' });
-        }
-
-        match.winner = winnerId;
-        match.status = 'completed';
-
-        // Update next round matches if needed
-        if (round.roundType !== 'final' && match.children.length > 0) {
-            // Logic to propagate winner to next round
-        }
-
-        await tournament.save();
-        res.json(tournament.bracket);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
-});
-
-module.exports = router;
+export default router;

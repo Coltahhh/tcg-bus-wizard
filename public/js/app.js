@@ -1,23 +1,25 @@
-// All your existing JavaScript code from the <script> tag
-const tournaments = [/*...*/];
-const rankings = [/*...*/];
-
-function initTournamentList() { /*...*/ }
-function showBracket(tournamentId) { /*...*/ }
-function showTournamentList() { /*...*/ }
-function initRankings() { /*...*/ }
-function showSection(sectionId) { /*...*/ }
-function initApp() { /*...*/ }
-
-// Add your new API call functions
-async function loadTournaments() {
+async function showBracket(tournamentId) {
     try {
-        const response = await fetch('/api/tournaments');
-        return await response.json();
+        const response = await fetch(`/api/tournaments/${tournamentId}`);
+        const tournament = await response.json();
+
+        const bracketHTML = tournament.bracket.rounds.map(round => `
+      <div class="round">
+        <h3>${round.roundType}</h3>
+        ${Object.values(round.matches).map(match => `
+          <div class="match">
+            ${match.players.map(player => `
+              <div class="player ${player._id === match.winner ? 'winner' : ''}">
+                ${player.username}
+              </div>
+            `).join('')}
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+
+        document.getElementById('bracketContainer').innerHTML = bracketHTML;
     } catch (error) {
-        console.error('Error loading tournaments:', error);
+        console.error('Error loading bracket:', error);
     }
 }
-
-// Initialize the app
-document.addEventListener('DOMContentLoaded', initApp);

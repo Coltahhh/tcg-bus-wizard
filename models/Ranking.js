@@ -1,12 +1,13 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+import mongoose from 'mongoose';
+import { getEloRating } from '../utils/rankingAlgorithms.js';
 
-const RankingSchema = new Schema({
+const rankingSchema = new mongoose.Schema({
     user: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
-        unique: true
+        unique: true,
+        index: true
     },
     totalPoints: {
         type: Number,
@@ -15,28 +16,54 @@ const RankingSchema = new Schema({
     },
     tournamentPoints: [{
         tournament: {
-            type: Schema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: 'Tournament'
         },
         points: {
             type: Number,
             min: 0
         },
-        placement: Number
+        placement: {
+            type: Number,
+            min: 1
+        },
+        date: {
+            type: Date,
+            default: Date.now
+        }
     }],
-    wins: {
-        type: Number,
-        default: 0,
-        min: 0
+    matches: {
+        wins: {
+            type: Number,
+            default: 0,
+            min: 0
+        },
+        losses: {
+            type: Number,
+            default: 0,
+            min: 0
+        },
+        draws: {
+            type: Number,
+            default: 0,
+            min: 0
+        },
+        winStreak: {
+            current: {
+                type: Number,
+                default: 0,
+                min: 0
+            },
+            max: {
+                type: Number,
+                default: 0,
+                min: 0
+            }
+        }
     },
-    losses: {
+    eloRating: {
         type: Number,
-        default: 0,
-        min: 0
-    },
-    ties: {
-        type: Number,
-        default: 0,
+        default: 1200,
         min: 0
     },
     tournamentsPlayed: {
@@ -44,75 +71,125 @@ const RankingSchema = new Schema({
         default: 0,
         min: 0
     },
-    winRate: {
-        type: Number,
-        default: 0,
-        min: 0,
-        max: 100
-    },
-    recentResults: [{
-        type: String,
-        enum: ['win', 'loss', 'tie']
-    }],
     rankingHistory: [{
-        date: Date,
+        date: {
+            type: Date,
+            default: Date.now
+        },
         points: Number,
-        rank: Number
+        rank: Number,
+        eloRating: Number
     }],
-    currentRank: Number
-}, { timestamps: true });
+    currentRank: {
+        type: Number,
+        min: 1
+    },
+    category: {
+        type: String,
+        enum: ['standard', 'legacy', 'premier'],
+        default: 'standard'
+    },
+    season: {
+        type: Number,
+        default: 1
+    }
+}, {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
 
-// Calculate win rate before saving
-RankingSchema.pre('save', function(next) {
-    const totalMatches = this.wins + this.losses + this.ties;
-    this.winRate = totalMatches > 0 ? Math.round((this.wins / totalMatches) * 100) : 0;
+// Indexes for faster queries
+rankingSchema.index({ totalPoints: -1 });
+rankingSchema.index({ currentRank: 1 });
+rankingSchema.index({ eloRating: -1 });
+rankingSchema.index({ category: 1, season: 1 });
+
+// Virtuals
+rankingSchema.virtual('winRate').get(function() {
+    const totalMatches = this.matches.wins + this.matches.losses + this.matches.draws;
+    return totalMatches > 0
+        ? (this.matches.wins / totalMatches * 100).toFixed(1)
+        : 0;
+});
+
+rankingSchema.virtual('averagePoints').get(function() {
+    return this.tournamentsPlayed > 0
+        ? (this.totalPoints / this.tournamentsPlayed).toFixed(2)
+        : 0;
+});
+
+// Pre-save hooks
+rankingSchema.pre('save', function(next) {
+    // Update max win streak
+    if (this.matches.winStreak.current > this.matches.winStreak.max) {
+        this.matches.winStreak.max = this.matches.winStreak.current;
+    }
     next();
 });
 
-// Static method to update rankings after a tournament
-RankingSchema.statics.updateTournamentResults = async function(tournamentId, results) {
-    const session = await mongoose.startSession();
-    session.startTransaction();
+// Static methods
+rankingSchema.statics.updateLeaderboard = async function(season = 1, category = 'standard') {
+    const rankings = await this.find({ season, category })
+        .sort({ totalPoints: -1 })
+        .select('user currentRank');
 
-    try {
-        for (const result of results) {
-            const { userId, points, placement } = result;
-
-            await this.findOneAndUpdate(
-                { user: userId },
-                {
-                    $inc: {
-                        totalPoints: points,
-                        tournamentsPlayed: 1,
-                        wins: placement === 1 ? 1 : 0
-                    },
-                    $push: {
-                        tournamentPoints: { tournament: tournamentId, points, placement },
-                        recentResults: { $each: [placement <= 4 ? 'win' : 'loss'], $slice: -10 },
-                        rankingHistory: {
-                            date: new Date(),
-                            points: this.totalPoints + points,
-                            rank: 0 // Will be calculated in separate ranking process
-                        }
-                    }
-                },
-                { session }
-            );
-        }
-
-        await session.commitTransaction();
-        return true;
-    } catch (error) {
-        await session.abortTransaction();
-        throw error;
-    } finally {
-        session.endSession();
-    }
+    return rankings.map((ranking, index) => ({
+        user: ranking.user,
+        previousRank: ranking.currentRank,
+        newRank: index + 1
+    }));
 };
 
-// Indexes for faster querying
-RankingSchema.index({ totalPoints: -1 });
-RankingSchema.index({ wins: -1 });
-RankingSchema.index({ currentRank: 1 });
+rankingSchema.statics.resetSeason = async function(newSeason) {
+    return this.updateMany(
+        {},
+        {
+            $set: {
+                totalPoints: 0,
+                'matches.wins': 0,
+                'matches.losses': 0,
+                'matches.draws': 0,
+                'matches.winStreak.current': 0,
+                tournamentsPlayed: 0,
+                season: newSeason,
+                tournamentPoints: [],
+                rankingHistory: []
+            }
+        }
+    );
+};
 
-module.exports = mongoose.model('Ranking', RankingSchema);
+// Instance methods
+rankingSchema.methods.addTournamentResult = async function(tournamentId, points, placement) {
+    this.tournamentPoints.push({
+        tournament: tournamentId,
+        points,
+        placement
+    });
+
+    this.totalPoints += points;
+    this.tournamentsPlayed += 1;
+
+    if (placement === 1) this.matches.wins += 1;
+    else this.matches.losses += 1;
+
+    // Update win streak
+    if (placement === 1) {
+        this.matches.winStreak.current += 1;
+    } else {
+        this.matches.winStreak.current = 0;
+    }
+
+    return this.save();
+};
+
+rankingSchema.methods.updateEloRating = async function(opponentRating, result) {
+    const { newRating } = getEloRating(this.eloRating, opponentRating, result);
+    this.eloRating = newRating;
+    return this.save();
+};
+
+const Ranking = mongoose.model('Ranking', rankingSchema);
+
+export default Ranking;
