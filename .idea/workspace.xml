@@ -5,10 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a57b9fb5-a4f4-4ab1-9e2f-790397d21811" name="Changes" comment="third commit">
-      <change afterPath="$PROJECT_DIR$/IMG_6513.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,7 +97,7 @@
       <workItem from="1743203983916" duration="207000" />
       <workItem from="1743204231214" duration="75000" />
       <workItem from="1743204356485" duration="12000" />
-      <workItem from="1743204394855" duration="3042000" />
+      <workItem from="1743204394855" duration="3816000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -157,7 +155,23 @@
       <option name="project" value="LOCAL" />
       <updated>1743205465073</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="third commit">
+      <option name="closed" value="true" />
+      <created>1743207505019</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1743207505019</updated>
+    </task>
+    <task id="LOCAL-00009" summary="third commit">
+      <option name="closed" value="true" />
+      <created>1743207571463</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1743207571463</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

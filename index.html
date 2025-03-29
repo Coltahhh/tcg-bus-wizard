@@ -40,9 +40,43 @@
       padding: 2rem 1rem;
       margin-bottom: 2rem;
     }
+    .underlined-heading {
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
 
+    .events-list {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .event-item {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .event-item:last-child {
+      border-bottom: none;
+    }
+
+    .event-item:hover {
+      background-color: rgba(255, 215, 0, 0.1);
+      transform: translateX(5px);
+    }
+
+    @media (max-width: 768px) {
+      .upcoming-events {
+        margin-bottom: 2rem;
+      }
+
+      .event-item {
+        padding: 0.75rem 0;
+      }
+    }
     .responsive-image {
-      max-width: 60%; /* Adjust this percentage to make image smaller/larger */
+      max-width: 100%; /* Adjust this percentage to make image smaller/larger */
       height: auto;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
@@ -92,6 +126,8 @@
         font-size: 0.8rem;
       }
     }
+
+
   </style>
 </head>
 <body>
@@ -124,15 +160,32 @@
 <div class="container mt-4">
   <!-- Home Section -->
   <div id="home" class="section active">
-    <div class="home-content text-center mb-4">
-      <h2>Welcome to TCGBusWizard!</h2>
-      <p class="lead">Track your One Piece TCG tournament results and rankings.</p>
-    </div>
+    <div class="row">
+      <!-- Upcoming Events Column -->
+      <div class="col-md-3 mb-4">
+        <div class="upcoming-events">
+          <h3 class="underlined-heading">Upcoming Events:</h3>
+          <ul class="events-list">
+            <li class="event-item">June 15: 3v3 Tournament</li>
+            <li class="event-item">June 22: Four Emperors</li>
+            <li class="event-item">July 1: EB02 Pre Release</li>
+          </ul>
+        </div>
+      </div>
 
-    <figure class="image-container">
-      <img src="IMG_6513.jpg" alt="TCG Tournament Example" class="responsive-image">
-      <figcaption class="image-caption">First 3v3 Tournament Participants</figcaption>
-    </figure>
+      <!-- Main Content Column -->
+      <div class="col-md-9">
+        <div class="home-content text-center mb-4">
+          <h2>Welcome to TCGBusWizard!</h2>
+          <p class="lead">Track your One Piece TCG tournament results and rankings.</p>
+        </div>
+
+        <figure class="image-container">
+          <img src="IMG_6513.jpg" alt="TCG Tournament Example" class="responsive-image">
+          <figcaption class="image-caption">First 3v3 Tournament Participants</figcaption>
+        </figure>
+      </div>
+    </div>
   </div>
 
   <div id="tournaments" class="section">
