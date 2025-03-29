@@ -155,3 +155,37 @@ body {
     background-color: #1a1a1a;
     border: 2px solid var(--primary-color);
 }
+.home-content {
+    padding: 2rem 1rem;
+    margin-bottom: 2rem;
+}
+
+.responsive-image {
+    max-width: 60%; /* Adjust this percentage to make image smaller/larger */
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    margin: 0 auto;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .responsive-image {
+        max-width: 90%; /* More width on mobile */
+    }
+
+    .home-content h2 {
+        font-size: 1.8rem;
+    }
+
+    .home-content .lead {
+        font-size: 1.1rem;
+    }
+}
+.responsive-image {
+    transition: transform 0.3s ease;
+}
+
+.responsive-image:hover {
+    transform: scale(1.02);
+}

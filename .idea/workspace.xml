@@ -5,42 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a57b9fb5-a4f4-4ab1-9e2f-790397d21811" name="Changes" comment="third commit">
-      <change afterPath="$PROJECT_DIR$/styles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/db.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/production.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/redis.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/controllers/authController.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/USER_GUIDE.md" beforeDir="false" afterPath="$PROJECT_DIR$/script.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/swagger.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/middleware/admin.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/middleware/auth.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/middleware/errorHandler.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/middleware/validate.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/Ranking.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/Tournament.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/User.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/css/styles.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/api.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/apiService.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/app.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/auth.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/deckTracker.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/router.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/tournamentCreation.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/tournaments.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/analyticsRoutes.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/authRoutes.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/rankingRoutes.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/tournamentRoutes.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/seeds/seedsDB.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/tournament.test.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/ui/login.test.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/rankingAlgorithms.js" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/IMG_6513.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,6 +71,7 @@
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Default.DESKTOP-O6TCP8J\WebstormProjects\tcg-bus-wizards" />
+      <recent name="C:\Users\Default.DESKTOP-O6TCP8J\WebstormProjects\tcg-bus-wizards\images" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -130,7 +99,7 @@
       <workItem from="1743203983916" duration="207000" />
       <workItem from="1743204231214" duration="75000" />
       <workItem from="1743204356485" duration="12000" />
-      <workItem from="1743204394855" duration="761000" />
+      <workItem from="1743204394855" duration="3042000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -172,7 +141,23 @@
       <option name="project" value="LOCAL" />
       <updated>1743201072154</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="third commit">
+      <option name="closed" value="true" />
+      <created>1743205421895</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1743205421895</updated>
+    </task>
+    <task id="LOCAL-00007" summary="third commit">
+      <option name="closed" value="true" />
+      <created>1743205465073</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1743205465073</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
